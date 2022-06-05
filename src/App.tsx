@@ -1,26 +1,47 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Box } from "@mui/material"
+import { OrbitControls } from "@react-three/drei"
+import { Canvas, useFrame, useLoader, useThree, extend } from "@react-three/fiber"
+import { FC, useEffect, useRef, useState } from "react"
+import { BackSide, DoubleSide, FrontSide, Mesh, TextureLoader } from "three"
+import { appStyles } from "./App.styles"
+import sanbek from "./assets/sanbek.jpg"
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const Obj: FC<any> = ({props}) => {
+  const ref = useRef<Mesh>(null); 
+
+  const texture = useLoader(TextureLoader, sanbek);
+  
+  return(
+    <mesh
+      {...props}
+      ref={ref}
+    >
+      <sphereGeometry attach={"geometry"} args={[2, 100, 40]}/>
+      <meshLambertMaterial 
+        attach={"material"} 
+        map={texture}
+        side={BackSide}
+      />
+    </mesh>
+  )
 }
 
-export default App;
+export const App = () => {
+
+  return (
+    <Box
+      component={"div"}
+      sx={appStyles.root}
+    >
+      <Canvas
+        style={appStyles.canvas}
+      >
+        <ambientLight />
+        <directionalLight position={[0, 1, 2]} color="white" />
+        <OrbitControls />
+        <ambientLight />
+        <Obj />
+      </Canvas>
+    </Box>
+  )
+}
